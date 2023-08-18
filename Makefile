@@ -22,9 +22,16 @@ sqlc_generate:
 test:
 	go test -v -cover ./...
 
+server:
+	go run main.go
+
 .PHONY:
 	postgres
 	create_db
 	drop_db
 	migrate_up
 	migrate_down
+	sqlc_init
+	sqlc_generate
+	test
+	server
