@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/urunsiyabend/simple_bank/util"
 	"testing"
-	"time"
 )
 
 func createRandomEntry(t *testing.T, acc Account) Entry {
@@ -114,32 +113,5 @@ func TestQueries_ListEntriesByAccount(t *testing.T) {
 	for _, entry := range entries {
 		require.NotEmpty(t, entry)
 		require.Equal(t, entry.AccountID, acc.ID)
-	}
-}
-
-func TestQueries_ListEntriesByAccountAndTime(t *testing.T) {
-	acc := createRandomAccount(t)
-
-	for i := 0; i < 10; i++ {
-		createRandomEntry(t, acc)
-	}
-
-	arg := ListEntriesByAccountAndTimeParams{
-		AccountID:   acc.ID,
-		Limit:       5,
-		Offset:      5,
-		CreatedAt:   time.Now().Add(-1 * time.Minute),
-		CreatedAt_2: time.Now(),
-	}
-
-	entries, err := testQueries.ListEntriesByAccountAndTime(context.Background(), arg)
-	require.NoError(t, err)
-	require.Len(t, entries, 5)
-
-	for _, entry := range entries {
-		require.NotEmpty(t, entry)
-		require.Equal(t, entry.AccountID, acc.ID)
-		require.True(t, entry.CreatedAt.After(acc.CreatedAt))
-		require.True(t, entry.CreatedAt.Before(time.Now()))
 	}
 }

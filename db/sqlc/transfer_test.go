@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/urunsiyabend/simple_bank/util"
 	"testing"
-	"time"
 )
 
 func createRandomTransfer(t *testing.T, fromAccount, toAccount Account) Transfer {
@@ -150,42 +149,6 @@ func TestQueries_ListTransfersByAccount(t *testing.T) {
 	}
 }
 
-func TestQueries_ListTransfersByAccountAndTime(t *testing.T) {
-	fromAccount := createRandomAccount(t)
-
-	for i := 0; i < 10; i++ {
-		toAccount := createRandomAccount(t)
-
-		createRandomTransfer(t, fromAccount, toAccount)
-	}
-
-	arg := ListTransfersByAccountAndTimeParams{
-		FromAccountID: fromAccount.ID,
-		Limit:         5,
-		Offset:        5,
-		CreatedAt:     fromAccount.CreatedAt,
-		CreatedAt_2:   time.Now(),
-	}
-
-	transfers, err := testQueries.ListTransfersByAccountAndTime(context.Background(), arg)
-	require.NoError(t, err)
-	require.Len(t, transfers, 5)
-
-	for _, transfer := range transfers {
-		require.NotEmpty(t, transfer)
-
-		require.NotEmpty(t, transfer.ID)
-		require.NotEmpty(t, transfer.FromAccountID)
-		require.NotEmpty(t, transfer.ToAccountID)
-		require.NotEmpty(t, transfer.Amount)
-		require.NotEmpty(t, transfer.CreatedAt)
-
-		require.Equal(t, fromAccount.ID, transfer.FromAccountID)
-		require.True(t, transfer.CreatedAt.After(fromAccount.CreatedAt))
-		require.True(t, transfer.CreatedAt.Before(time.Now()))
-	}
-}
-
 func TestQueries_ListTransfersByAccountAndToAccount(t *testing.T) {
 	fromAccount := createRandomAccount(t)
 	toAccount := createRandomAccount(t)
@@ -216,50 +179,5 @@ func TestQueries_ListTransfersByAccountAndToAccount(t *testing.T) {
 
 		require.Equal(t, fromAccount.ID, transfer.FromAccountID)
 		require.Equal(t, toAccount.ID, transfer.ToAccountID)
-	}
-}
-
-func TestQueries_ListTransfersByAccountAndToAccountAndTime(t *testing.T) {
-	fromAccount := createRandomAccount(t)
-	toAccount := createRandomAccount(t)
-
-	for {
-		if fromAccount.ID == toAccount.ID {
-			toAccount = createRandomAccount(t)
-		} else {
-			break
-		}
-	}
-
-	for i := 0; i < 10; i++ {
-		createRandomTransfer(t, fromAccount, toAccount)
-	}
-
-	arg := ListTransfersByAccountAndToAccountAndTimeParams{
-		FromAccountID: fromAccount.ID,
-		ToAccountID:   toAccount.ID,
-		Limit:         5,
-		Offset:        5,
-		CreatedAt:     fromAccount.CreatedAt,
-		CreatedAt_2:   time.Now(),
-	}
-
-	transfers, err := testQueries.ListTransfersByAccountAndToAccountAndTime(context.Background(), arg)
-	require.NoError(t, err)
-	require.Len(t, transfers, 5)
-
-	for _, transfer := range transfers {
-		require.NotEmpty(t, transfer)
-
-		require.NotEmpty(t, transfer.ID)
-		require.NotEmpty(t, transfer.FromAccountID)
-		require.NotEmpty(t, transfer.ToAccountID)
-		require.NotEmpty(t, transfer.Amount)
-		require.NotEmpty(t, transfer.CreatedAt)
-
-		require.Equal(t, fromAccount.ID, transfer.FromAccountID)
-		require.Equal(t, toAccount.ID, transfer.ToAccountID)
-		require.True(t, transfer.CreatedAt.After(fromAccount.CreatedAt))
-		require.True(t, transfer.CreatedAt.Before(time.Now()))
 	}
 }

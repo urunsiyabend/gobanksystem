@@ -8,10 +8,11 @@ drop_db:
 	docker exec -it postgres15 dropdb simple_bank
 
 migrate_up:
-	migrate -path db/migrations -database "postgresql://root:secret@localhost:5433/simple_bank?sslmode=disable" -verbose up
+	migrate -path db/migrations -database "postgresql://root:secret@localhost:5433/simple_bank?sslmode=disable" -verbose up $(count)
 
 migrate_down:
-	migrate -path db/migrations -database "postgresql://root:secret@localhost:5433/simple_bank?sslmode=disable" -verbose down
+	migrate -path db/migrations -database "postgresql://root:secret@localhost:5433/simple_bank?sslmode=disable" -verbose down $(count)
+
 
 sqlc_init:
 	docker run --rm -v $(CURDIR):/src -w /src kjconroy/sqlc init
@@ -25,6 +26,10 @@ test:
 server:
 	go run main.go
 
+mock:
+	mockgen -package mockdb -destination db/mock/store.go github.com/urunsiyabend/simple_bank/db/sqlc Store
+
+
 .PHONY:
 	postgres
 	create_db
@@ -35,3 +40,4 @@ server:
 	sqlc_generate
 	test
 	server
+	mock
