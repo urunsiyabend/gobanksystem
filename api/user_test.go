@@ -212,7 +212,7 @@ func TestServer_createUser(t *testing.T) {
 			data, err := json.Marshal(tc.body)
 			require.NoError(t, err)
 
-			server := NewServer(store)
+			server := NewTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			url := "/users"

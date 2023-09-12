@@ -22,6 +22,13 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: ListAccountsByOwner :many
+SELECT * FROM accounts
+WHERE owner = $1
+ORDER BY id
+LIMIT $2
+OFFSET $3;
+
 -- name: UpdateAccount :one
 UPDATE accounts
 SET balance = $2
