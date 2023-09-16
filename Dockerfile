@@ -18,5 +18,5 @@ COPY db/migrations ./db/migrations
 RUN chmod +x ./migrate
 
 EXPOSE 8080
-CMD ["./main"]
-ENTRYPOINT ["./run.sh"]
+CMD ["/app/main"]
+ENTRYPOINT ["/app/run.sh"]
